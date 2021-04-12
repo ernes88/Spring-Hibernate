@@ -9,16 +9,107 @@
     http://www.springframework.org/schema/context/spring-context-3.1.xsd
 ">
 
+<!-- En esta sección se muestra el uso de la etiqueta <context:property-placeholder/> para mostrar otra variante de inyección de campos, en base a la clase JefeEmpleado, para no tener que incluir dentro de nuestro bean miJefeEmpleado una etiqueta de tipo property-->
+<context:property-placeholder location="classpath:datosEmpresa.propiedades"/>
+
+
 <!-- Creación de la Dependencia, esta va a llamarse miInforme y va a ser de tipo Informe el objeto que se va a inyectar, el cual estará en el paquete inversionOfControl. -->
 <bean id="miInforme" class="inversionOfControl.Informe"></bean>
 
-<!-- Creación del bean llamado miEmpleado, que será un objeto de tipo JefeEmpleado. Spring le proporcionará a mi clase principal este tipo de objeto pues se lo estamos indicando acá -->
-<bean id="miEmpleado" class="inversionOfControl.JefeEmpleado">
+
+
+
+<!-- Creación del bean llamado miJefeEmpleado, que será un objeto de tipo JefeEmpleado. Spring le proporcionará a mi clase principal este tipo de objeto pues se lo estamos indicando acá utilizando un constructor-->
+<bean id="miJefeEmpleado" class="inversionOfControl.JefeEmpleado">
 	
-	<constructor-arg ref="miInforme"></constructor-arg>		<!-- Acá se define que Spring además utiliza la inyección de una dependencia llamada miInforme de tipo Informe a la clase JefeEmpleado para proporcionarle la capacidad de trabajar con objetos de este tipo. La clase JefeEmpleado por su parte presenta un constructor que le permite inicializar mediante este constructor a un ojeto de tipo CreacionInformes, que es la interfaz padre de Informes, por tanto por eso puede contener un objeto de la clase Informe hija  -->
+	<constructor-arg ref="miInforme"></constructor-arg>									<!-- Acá se define que Spring además utiliza la inyección de una dependencia llamada miInforme de tipo Informe a la clase JefeEmpleado para proporcionarle la capacidad de trabajar con objetos de este tipo. La clase JefeEmpleado por su parte presenta un constructor que le permite inicializar mediante este constructor a un ojeto de tipo CreacionInformes, que es la interfaz padre de Informes, por tanto por eso puede contener un objeto de la clase Informe hija  -->
+	
+	<!-- Inyección de campos -->
+	<property name="email" value="jefatura@comCasting.com"></property>					<!-- Definición del valor de la propiedad email directamente en el xml -->
+	
+	<property name="nombreEmpresa" value="ComCasting"></property>						<!-- Definición del valor de la propiedad nombreEmpresa directamente en el xml -->
+	
+</bean>
+
+
+
+
+<!-- Creación del bean llamado miDirectorEmpleado, que será un objeto de tipo DirectorEmpleado. Spring le proporcionará a mi clase principal este tipo de objeto pues se lo estamos indicando acá utilizando un constructor -->
+<bean id="miDirectorEmpleado" class="inversionOfControl.DirectorEmpleado">
+	
+	<constructor-arg ref="miInforme"></constructor-arg>									<!-- Acá se define que Spring además utiliza la inyección de una dependencia llamada miInforme de tipo Informe a la clase DirectorEmpleado para proporcionarle la capacidad de trabajar con objetos de este tipo. La clase DirectorEmpleado por su parte presenta un constructor que le permite inicializar mediante este constructor a un ojeto de tipo CreacionInformes, que es la interfaz padre de Informes, por tanto por eso puede contener un objeto de la clase Informe hija  -->
+	
+	<!-- Inyección de campos -->
+	<property name="email" value="direccionEjecutiva@comCasting.com"></property>		<!-- Definición del valor de la propiedad email directamente en el xml -->
+	
+	<property name="nombreEmpresa" value="ComCasting"></property>						<!-- Definición del valor de la propiedad nombreEmpresa directamente en el xml -->
 
 </bean>
 
+
+
+
+
+<!-- Creación de la inyección de dependencia utilizando un método setter. Se define el valor de los campos a inyectar directamente en el bean -->
+<bean id="miSecretarioEmpleado" class="inversionOfControl.SecretarioEmpleado"> 
+	
+	<property name="informeNuevo" ref="miInforme"></property>							<!-- En este caso se usa la etiqueta property, con el atributo name cuyo nombre debe ser el nombre del setter de la clase SecretarioEmpleado, pero quitandole la palabra set y empezando con minúscula la letra que quede de primera, o sea informeNuevo  -->
+	
+	<!-- Inyección de campos -->
+	<property name="email" value="secretaria@comCasting.com"></property>				<!-- Se genera el contenido de las dependencias que serán inyectadas a ambos campos de la clase SecretarioEmpleado. Estos vaores establecidos acá para ambos campos pasarán a asignarse a los mismos cuando se genera el objeto de tipo SecretarioEmpleado al llamar al bean con getBean() en la clase UsoEmpleado  -->
+																						<!-- Definición del valor de la propedad email directamente en el xml -->
+	<property name="nombreEmpresa" value="ComCasting"></property>						<!-- Definición del valor de la propedad nombreEMpresa directamente en el xml -->
+
+</bean>
+
+
+
+
+
+<!-- A partir de acá se definen tres beans llamados miSecretarioEmpleado2, miDirectorEmpleado2 y miJefeEmpleado2 que son ejemplos solo para mostrar la inyección de campos usando un archivo externo -->
+<!-- Se capturan los valores de los campos a inyectar que fueron definidos en un archivo de configuración externo cuyo nombre se especifica arriba en la etiqueta <context:property-placeholder>- -->
+
+<bean id="miSecretarioEmpleado2" class="inversionOfControl.SecretarioEmpleado"> 
+	
+	<property name="informeNuevo" ref="miInforme"></property>							<!-- En este caso se usa la etiqueta property, con el atributo name cuyo nombre debe ser el nombre del setter de la clase SecretarioEmpleado, pero quitandole la palabra set y empezando con minúscula la letra que quede de primera, o sea informeNuevo  -->
+	
+	<!-- Inyección de campos -->
+	<property name="email" value="${emailSecretaria}"></property>						<!-- En este caso se importa desde el archivo externo .file el valor de la propiedad email, que está asociado en ese archivo con la etiqueta emailSecretaria y cuyo valor va a ser el email de la secretaria -->
+	
+	<property name="nombreEmpresa" value="${nombreEmpresa}"></property>					<!-- En este caso se importa desde el archivo externo .file el valor de la propiedad nombreEmpresa, que está asociado en ese archivo con la etiqueta emailSecretaria y cuyo valor va a ser el email de la secretaria -->
+	
+</bean>
+
+
+
+
+
+
+<bean id="miDirectorEmpleado2" class="inversionOfControl.DirectorEmpleado">
+	
+	<constructor-arg ref="miInforme"></constructor-arg>		<!-- Acá se define que Spring además utiliza la inyección de una dependencia llamada miInforme de tipo Informe a la clase DirectorEmpleado para proporcionarle la capacidad de trabajar con objetos de este tipo. La clase DirectorEmpleado por su parte presenta un constructor que le permite inicializar mediante este constructor a un ojeto de tipo CreacionInformes, que es la interfaz padre de Informes, por tanto por eso puede contener un objeto de la clase Informe hija  -->
+	
+	<!-- Inyección de campos -->
+	<property name="email" value="${emailDireccion}"></property>
+	
+	<property name="nombreEmpresa" value="${nombreEmpresa}"></property>
+	
+</bean>
+
+
+
+
+
+<bean id="miJefeEmpleado2" class="inversionOfControl.JefeEmpleado">
+	
+	<constructor-arg ref="miInforme"></constructor-arg>		<!-- Acá se define que Spring además utiliza la inyección de una dependencia llamada miInforme de tipo Informe a la clase JefeEmpleado para proporcionarle la capacidad de trabajar con objetos de este tipo. La clase JefeEmpleado por su parte presenta un constructor que le permite inicializar mediante este constructor a un ojeto de tipo CreacionInformes, que es la interfaz padre de Informes, por tanto por eso puede contener un objeto de la clase Informe hija  -->
+	
+	<!-- Inyección de campos -->
+	<property name="email" value="${emailJefatura}"></property>
+	
+	<property name="nombreEmpresa" value="${nombreEmpresa}"></property>
+	
+</bean>
 
 
 
